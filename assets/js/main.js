@@ -35,15 +35,40 @@
           whatsapp_desc: "0822-2165-7340 | digital service consultation"
         }
       };
+
+      function shouldUseSafeRender() {
+        var ua = navigator.userAgent || "";
+        var inAppBrowser = /Instagram|FBAN|FBAV/i.test(ua);
+        var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var forceSafe = false;
+        try {
+          forceSafe = new URLSearchParams(window.location.search).get("safe") === "1";
+        } catch (error) {
+          forceSafe = false;
+        }
+        return inAppBrowser || reducedMotion || forceSafe;
+      }
+
+      var safeRender = shouldUseSafeRender();
+      if (safeRender) {
+        body.classList.add("safe-render");
+      }
+
       var count = window.matchMedia("(min-width: 768px)").matches ? 36 : 24;
+      if (safeRender) {
+        count = Math.max(12, Math.floor(count * 0.6));
+      }
+
       for (var i = 0; i < count; i += 1) {
         var star = document.createElement("span");
         star.className = "star";
+        var starDuration = safeRender ? 4.4 + Math.random() * 4.8 : 2.8 + Math.random() * 3.8;
+        var starOpacity = safeRender ? 0.2 + Math.random() * 0.48 : 0.25 + Math.random() * 0.75;
         star.style.left = Math.random() * 100 + "%";
         star.style.top = Math.random() * 100 + "%";
-        star.style.animationDuration = (2.8 + Math.random() * 3.8).toFixed(2) + "s";
+        star.style.animationDuration = starDuration.toFixed(2) + "s";
         star.style.animationDelay = (-Math.random() * 5).toFixed(2) + "s";
-        star.style.opacity = (0.25 + Math.random() * 0.75).toFixed(2);
+        star.style.opacity = starOpacity.toFixed(2);
         starsBox.appendChild(star);
       }
 

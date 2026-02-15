@@ -74,6 +74,8 @@
       overflow: hidden;
       filter: blur(var(--flow-blur));
       opacity: var(--flow-opacity);
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .quantum-flow::before,
@@ -119,6 +121,8 @@
       mask-image: radial-gradient(circle at center, black 30%, transparent 95%);
       animation: pulseGrid var(--grid-pulse-duration) linear infinite,
         driftGrid var(--grid-drift-duration) ease-in-out infinite;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .noise-grid::before {
@@ -142,6 +146,8 @@
       pointer-events: none;
       z-index: -1;
       animation: starDrift var(--star-drift-duration) ease-in-out infinite alternate;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .star {
@@ -152,6 +158,48 @@
       background: rgba(255, 255, 255, 0.95);
       box-shadow: 0 0 12px rgba(108, 243, 255, 0.6);
       animation: twinkle linear infinite;
+    }
+
+    body.safe-render {
+      animation: none;
+      background-size: auto, auto, auto;
+    }
+
+    body.safe-render::before,
+    body.safe-render::after {
+      animation: none;
+      filter: blur(18px);
+      opacity: 0.52;
+    }
+
+    body.safe-render .quantum-flow {
+      display: none;
+    }
+
+    body.safe-render .noise-grid {
+      mask-image: none;
+      opacity: 0.12;
+      animation: pulseGrid 14s linear infinite;
+    }
+
+    body.safe-render .noise-grid::before {
+      display: none;
+    }
+
+    body.safe-render .stars {
+      animation: none;
+    }
+
+    body.safe-render .star {
+      box-shadow: 0 0 8px rgba(108, 243, 255, 0.36);
+    }
+
+    body.safe-render .card {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background:
+        linear-gradient(165deg, rgba(122, 214, 255, 0.12), transparent 24%),
+        rgba(8, 14, 33, 0.86);
     }
 
     .wrap {
