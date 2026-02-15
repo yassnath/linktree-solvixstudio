@@ -2,9 +2,12 @@
       var body = document.body;
       var starsBox = document.getElementById("stars");
       var langButtons = document.querySelectorAll(".lang-btn");
+      var themeButtons = document.querySelectorAll(".theme-btn");
       var pageTitle = document.querySelector("title");
       var pageDescription = document.querySelector('meta[name="description"]');
+      var browserThemeColor = document.querySelector('meta[name="theme-color"]');
       var langStorageKey = "solvix-lang";
+      var themeStorageKey = "solvix-theme";
       var dictionary = {
         in: {
           html_lang: "id",
@@ -72,6 +75,27 @@
         starsBox.appendChild(star);
       }
 
+      function setTheme(nextTheme, persist) {
+        var theme = nextTheme === "light" ? "light" : "dark";
+        body.setAttribute("data-theme", theme);
+        for (var t = 0; t < themeButtons.length; t += 1) {
+          var themeButton = themeButtons[t];
+          var themeActive = themeButton.getAttribute("data-theme") === theme;
+          themeButton.classList.toggle("is-active", themeActive);
+          themeButton.setAttribute("aria-pressed", themeActive ? "true" : "false");
+        }
+        if (browserThemeColor) {
+          browserThemeColor.setAttribute("content", theme === "light" ? "#dcedff" : "#0b1022");
+        }
+        if (persist) {
+          try {
+            localStorage.setItem(themeStorageKey, theme);
+          } catch (error) {
+            // Ignore storage errors in restricted contexts.
+          }
+        }
+      }
+
       function setLanguage(nextLang, persist) {
         var lang = nextLang === "en" ? "en" : "in";
         var textSet = dictionary[lang];
@@ -124,6 +148,12 @@
         });
       }
 
+      for (var p = 0; p < themeButtons.length; p += 1) {
+        themeButtons[p].addEventListener("click", function () {
+          setTheme(this.getAttribute("data-theme"), true);
+        });
+      }
+
       var initialLang = body.getAttribute("data-lang") || "in";
       try {
         var storedLang = localStorage.getItem(langStorageKey);
@@ -134,6 +164,19 @@
         // Ignore storage errors in restricted contexts.
       }
 
+      var initialTheme = body.getAttribute("data-theme") || "dark";
+      try {
+        var storedTheme = localStorage.getItem(themeStorageKey);
+        if (storedTheme === "light" || storedTheme === "dark") {
+          initialTheme = storedTheme;
+        } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+          initialTheme = "light";
+        }
+      } catch (error) {
+        // Ignore storage errors in restricted contexts.
+      }
+
+      setTheme(initialTheme, false);
       setLanguage(initialLang, false);
       document.getElementById("year").textContent = new Date().getFullYear();
     })();
